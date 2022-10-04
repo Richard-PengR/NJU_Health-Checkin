@@ -1,0 +1,33 @@
+name: NJU_Health_Checkin_2
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4,5 * * *"
+    # 对应的中国时间(UTC+8)为每天中午12点
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.10.0
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run
+        env:
+          STUDENT_ID: ${{ secrets.STUDENT_ID_2 }}
+          PASSWORD: ${{ secrets.PASSWORD_2 }}
+          LOCATION: ${{ secrets.LOCATION }}
+          BODY_TEMP_OK: ${{ secrets.BODY_TEMP_OK }}
+          HEALTH_STATUS: ${{ secrets.HEALTH_STATUS }}
+          MY_HEALTH_CODE_COLOR: ${{ secrets.MY_HEALTH_CODE_COLOR }}
+          FAM_MEM_HEALTH_CODE_COLOR: ${{ secrets.FAM_MEM_HEALTH_CODE_COLOR }}
+          LAST_RNA: ${{ secrets.LAST_RNA }}
+          TRY_N_TIMES: ${{ secrets.TRY_N_TIMES }}
+          LEAVE_NJ: ${{ secrets.LEAVE_NJ_2 }}
+          USER_AGENT: ${{ secrets.USER_AGENT }}
+        run: python decodeEnv.py && python checkin.py
