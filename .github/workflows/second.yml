@@ -1,5 +1,5 @@
 
-name: NJU_Health_Checkin
+name: NJU_Health_Checkin_2
 
 on:
   workflow_dispatch:
