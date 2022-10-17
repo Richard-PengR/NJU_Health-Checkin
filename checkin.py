@@ -22,11 +22,18 @@ def check_login(session, location, leave_NJ):
 	print("Login Successfully")
 	wid = history['data'][0]['WID']
 	if location == 'default':
-		location = history['data'][1]['CURR_LOCATION'] # 与昨天的CURR_LOCATION保持一致
+		try:
+			location = history['data'][1]['CURR_LOCATION'] # 与昨天的CURR_LOCATION保持一致
+		except:
+			print('由于昨天没有打卡，无法获取默认打卡地点。请手动设置')
+			exit(-1)
 	if leave_NJ == 'default':
 		leaveNanjing = False
 		for i in range(1,14):
-			nowL = history['data'][i]['CURR_LOCATION']
+			try:
+				nowL = history['data'][i]['CURR_LOCATION']
+			except:
+				continue
 			if '南京市' not in nowL:
 				leaveNanjing = True
 				break
@@ -65,7 +72,12 @@ def main():
 	with open(configFile, "r", encoding='utf-8') as f:
 		info = json.load(f)
 		if info['last_RNA'] == 'default':
-			yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+			timeZone = time.strftime('%Z', time.gmtime())
+			assert timeZone[:2] == '中国' or timeZone[:5] == 'China' or timeZone[:3] == 'GMT', '本机时区无法转换，请在github(https://github.com/Do1e/NJU_Health-Checkin)提交issue'
+			if timeZone[:2] == '中国' or timeZone[:5] == 'China':
+				yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+			else:
+				yesterday = datetime.datetime.now() - datetime.timedelta(days=1) + datetime.timedelta(hours=8)
 			info['last_RNA'] = yesterday.strftime("%Y-%m-%d+%H")
 			print('waining: 上次核酸时间未设置，默认为: ' + info['last_RNA'])
 	assert 'student_id' in info, "Expected infomation `User_Agent` not found. Check config.json"
