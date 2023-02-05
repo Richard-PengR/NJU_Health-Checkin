@@ -56,21 +56,6 @@ except KeyError:
     info['fam_mem_health_code_color'] = '1'
 
 try:
-    info['last_RNA'] = os.environ['LAST_RNA']
-    if info['last_RNA'] == '' or info['last_RNA'] == 'default':
-        info['last_RNA'] = 'default24'
-    else:
-        res = re.match(r'\d{4}-\d{2}-\d{2}\+\d{2}$', info['last_RNA'])
-        if not res:
-            res = re.match(r'\d+$', info['last_RNA'])
-            if not res:
-                raise ValueError("Expected infomation `last_RNA` is not in correct format. last_RNA example: 2022-09-01+16 or 24")
-            else:
-                info['last_RNA'] = 'default' + info['last_RNA']
-except KeyError:
-    info['last_RNA'] = 'default24'
-
-try:
     info['try_N_times'] = os.environ['TRY_N_TIMES']
     if info['try_N_times'] == '':
         info['try_N_times'] = '0'
@@ -88,6 +73,14 @@ try:
     else: assert info['leave_NJ'] in ['default', '0', '1'], "Expected infomation `leave_NJ` is default, 0 or 1"
 except KeyError:
     info['leave_NJ'] = 'default'
+
+try:
+    info['infection_status'] = os.environ['INFECTION_STATUS']
+    if info['infection_status'] == '':
+        info['infection_status'] = '2'
+    else: assert info['infection_status'] in ['1', '2', '3'], "Expected infomation `infection_status` is 1, 2 or 3"
+except KeyError:
+    info['infection_status'] = '2'
 
 print(json.dumps(info, indent=4, ensure_ascii=False))
 with open('config.json', 'w') as f:
